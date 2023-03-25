@@ -1,135 +1,105 @@
-#%% Pocetna matrica sa zelenim kvadraticima
 
-m = [chr(0x1F7E9) *7 for i in range(7)]
 
-for i in m:
-    for j in i:
-        print(j, end=" ")
-    print()  
+print("Welcome let's play some battleships!")
+
+board = []
+wrong = []
+
+for i in range(0,7):
+    wrong.append([chr(0x274C)]*7)
+
+for i in range(0,7):
+    board.append([chr(0x1F7E9)]*7)
+
+def print_board(board):
+    for row in board:
+        print (" ".join(row))
+
+print_board(board)
 
 #%% Pravljenje i upis u file brodovi
-           
-n = [chr(0x274C) *7 for i in range(7)]
-
-
-for i in n:
-    for j in i:
-        print(j, end=" ")
-    print()  
-
-
-
-
-
-
-#%% Pravljenje matrice u koju se unose brodovi sa crvenim x
 import csv
-sidro = [chr(0x2693) *7 for i in range(7)]
-file = open('brodovi.txt', 'w')
 
-file.write('(0,0,2,v)\n(2,0,5,h)\n(0,6,3,h)\n(2,2,2,h)\n(5,2,4,v)')
 
-file.close()
 cnt = 0
-# xMax, yMax = 7
-x ,y, size, orientation= [],[],[],[]
-with open('brodovi.txt','r') as f:
-    reader = csv.reader(f)
+ships = 0
+
+shipRow = [8]
+shipCol = [8]
+
+x = []
+y = []
+size = []
+orientation = []
+
+with open('brodovi.txt','r') as brodici:
+    reader = csv.reader(brodici)
     for row in reader:
         x.append(row[0])
         y.append(row[1])
         size.append(row[2])
         orientation.append(row[3])
-        cnt += 1
+        cnt += 1   
 
-
-print(cnt)        
-
-for i in range(5):
+prepare = []
+for i in range(cnt):
     x[i] = x[i].replace('(','') 
-    orientation[i] = orientation[i].replace(')','') 
-    print(x[i], y[i], size[i], orientation[i])
-
-unos = input("unesi korsinate")
-print(unos)
-
-
-
-# brodovi = []
-# with open('brodovi.txt', 'r') as file:
-#     for line in file:
-#         x, y, size, orientation = line.strip().strip('()').split(',')
-#         brodovi.append((int(x), int(y), int(size), orientation))
-#         if orientation == 'h':
-#             n[y] = n[y][:x] + chr(0x2693) + n[y][x+size:]
-#         elif orientation == 'v':
-#              n[x] = n[x][:y] + chr(0x2693) + n[x][y+size:]
+    orientation[i] = orientation[i].replace(')','')   
+    if orientation[i] == "v":
+        tmp = i
+        m = size[i]
+        for o in range(int(m)):
+            wrong[i][tmp] = chr(0x2693)
+            tmp += 1
+            ships += 1
+    if orientation[i] == "h":
+        tmp = i
+        m = size[i]
+        for o in range(int(m)):
+            wrong[tmp][i] = chr(0x2693)
+            tmp += 1
+            ships += 1
 
 
-# file = open('brodovi.txt', 'w')
+Try = 0
+correct = 0
+while Try < 20:
+    getTry = input("Insert cordinates:")
+    getTry = getTry.replace('(', '').replace(')', '').replace(',', ' ')
+    try:
+        guess_col, guess_row = [int(x) for x in getTry.split()]
 
-# file.write('(0,0,2,v)\n(2,0,5,h)\n(0,6,3,h)\n(2,2,2,h)\n(5,2,4,v)')
+        guess_col -=1
+        guess_row -=1
 
-# file.close()
-
-# n = [['' for j in range(7)] for i in range(7)]
-
-
-# with open('brodovi.txt', 'r') as file:
-#     for line in file:
-#         x, y, size, orientation = line.strip().strip('()').split(',')
-#         x, y, size = int(x), int(y), int(size)
-
-#         if orientation == 'h':
-#             for j in range(size):
-#                 n[x][y+j] = 'X'
-#         elif orientation == 'v':
-#             for i in range(size):
-#                 n[x+i][y] = 'X'
-
-
-
-# %%
-
-# Kreirajte praznu matricu dimenzije 7x7
-matrica = [[0 for j in range(7)] for i in range(7)]
-
-# Otvorite fajl i pročitajte vrednosti
-with open('brodovi.txt', 'r') as file:
-    for line in file:
-        x, y, size, orientation = line.strip().strip('()').split(',')
-        x = int(x)
-        y = int(y)
-        size = int(size)
-
-        # Postavite vrednosti u matricu u zavisnosti od orijentacije
-        if orientation == 'v':
-            for i in range(size):
-                 n[x+i][y] = 'B'
+        if guess_row > 7 or guess_col > 7:
+            print("Out of range max coll 7 and row 8")
         else:
-            for j in range(size):
-                n[x][y+j] = 'B'
+            for obj in wrong:
+                if board[guess_row][guess_col] == chr(0x274C) or board[guess_row][guess_col] == chr(0x2693):
+                    print("You've guessed that one already")
+                    break
+                elif wrong[guess_row][guess_col] == chr(0x2693):
+                    print("nice")
+                    correct += 1
+                    board[guess_row][guess_col] = chr(0x2693)
+                    print_board(board)
+                    if correct == ships:
+                        Try = 20
+                        print("Congratulation!")
+                    break
+                elif wrong[guess_row][guess_col] == chr(0x274C):
+                    print(":(")
+                    board[guess_row][guess_col] = chr(0x274C)
+                    print_board(board)
+                    Try += 1
+                    if Try == 20:
+                        print("Better luck next time")
+                    break
 
+    except:
+        print("Wrong number format") 
 
-# Ispis matrice
-for i in range(7):
-    for j in range(7):
-        print(matrica[i][j], end=' ')
-    print()
-
-# %%
-
-n = [[' ' for i in range(7)] for j in range(7)]
-
-with open('brodovi.txt', 'r') as file:
-    for line in file:
-        x, y, size, orientation = line.strip().strip('()').split(',')
-        x, y, size = int(x), int(y), int(size)
-        if orientation == 'v':
-            for i in range(size):
-                n[x+i][y] = 'B'
-        else:
-            for j in range(size):
-                n[x][y+j] = 'B'
-
-# %%
+    
+print("End")
+print_board(board)
