@@ -1,13 +1,13 @@
-
+#%% Pravljenje i upis u file brodovi
 import csv
 print("Welcome let's play some battleships!")
 
 board = []
-wrong = []
+shipBoard = []
 #ovde ti se kreiraju dve table 7*7 jedna sa zelenim jedna 
 # sa prodicima i iksicima
 for i in range(0,7):
-    wrong.append([chr(0x274C)]*7)
+    shipBoard.append([chr(0x274C)]*7)
 
 for i in range(0,7):
     board.append([chr(0x1F7E9)]*7)
@@ -20,13 +20,9 @@ def print_board(board):
 # i iskreno ne predlazem ti da ih sklanjas prevelik je seks bez njih
 print_board(board)
 
-#%% Pravljenje i upis u file brodovi
+
 cnt = 0
 ships = 0
-
-shipRow = [8]
-shipCol = [8]
-
 x = []
 y = []
 size = []
@@ -48,25 +44,26 @@ for i in range(cnt):
     x[i] = x[i].replace('(','') 
     orientation[i] = orientation[i].replace(')','')   
     if orientation[i] == "v":
-        tmp = i
+        tmpX = int(x[i])
+        tmpY = int(y[i])
         m = size[i]
         for o in range(int(m)):
-            wrong[i][tmp] = chr(0x2693)
-            tmp += 1
+            shipBoard[tmpX][tmpY] = chr(0x2693)
+            tmpX += 1
             ships += 1
     if orientation[i] == "h":
-        tmp = i
+        tmpX = int(x[i])
+        tmpY = int(y[i])
         m = size[i]
         for o in range(int(m)):
-            wrong[tmp][i] = chr(0x2693)
-            tmp += 1
+            shipBoard[tmpX][tmpY] = chr(0x2693)
+            tmpY += 1
             ships += 1
-
 
 Try = 0
 correct = 0
 while Try < 20:
-    getTry = input("Insert cordinates:")
+    getTry = input("Insert column and row in folowing format (x, y):")
     getTry = getTry.replace('(', '').replace(')', '').replace(',', ' ')
     #ovaj try exception blok ti je ovde da spreci pogresan unos 
     # tipa kada se unosi da se ne unese slucajno 22 ili tako neki broj
@@ -88,31 +85,30 @@ while Try < 20:
             # ako je brodic selektuje se i to je to
             # a ako je x izabran koji nije pre izabran onda se Try cnt povecava i ako lupi 20 program se zavrsava 
             #kontam da ces skontati al ako ne skontas mozemo se cuti tako da ono
-            for obj in wrong:
-                if board[guess_row][guess_col] == chr(0x274C) or board[guess_row][guess_col] == chr(0x2693):
+            for obj in shipBoard:
+                if board[guess_col][guess_row] == chr(0x274C) or board[guess_col][guess_row]  == chr(0x2693):
                     print("You've guessed that one already")
                     break
-                elif wrong[guess_row][guess_col] == chr(0x2693):
+                elif shipBoard[guess_col][guess_row] == chr(0x2693):
                     print("nice")
                     correct += 1
-                    board[guess_row][guess_col] = chr(0x2693)
+                    board[guess_col][guess_row]  = chr(0x2693)
                     print_board(board)
                     if correct == ships:
                         Try = 20
                         print("Congratulation!")
                     break
-                elif wrong[guess_row][guess_col] == chr(0x274C):
+                elif shipBoard[guess_col][guess_row]  == chr(0x274C):
                     print(":(")
-                    board[guess_row][guess_col] = chr(0x274C)
+                    board[guess_col][guess_row]  = chr(0x274C)
                     print_board(board)
                     Try += 1
                     if Try == 20:
                         print("Better luck next time")
                     break
-
     except:
         print("Wrong number format") 
-
-    print_board(board)
 print("End")
 
+
+# %%
